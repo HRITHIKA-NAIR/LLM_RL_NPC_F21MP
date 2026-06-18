@@ -8,11 +8,13 @@ public class GameManager : MonoBehaviour
     [Header("References")]
     public List<GameObject> npcObjects;
     public GameObject botObject;
+    public ArenaSetup arenaSetup;
 
     [Header("State")]
     public string currentBotType = "Aggressive";
     public string currentCombo = "A";
     public bool trainingMode = true;
+
     public int episodeCount = 0;
     public float episodeStartTime;
 
@@ -21,13 +23,16 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        if (instance == null) instance = this;
-        else Destroy(gameObject);
+        if (instance == null)
+            instance = this;
+        else
+            Destroy(gameObject);
     }
 
     void Start()
     {
         botHP = botObject.GetComponent<HPSystem>();
+
         foreach (var npc in npcObjects)
             npcHPSystems.Add(npc.GetComponent<HPSystem>());
 
@@ -36,22 +41,51 @@ public class GameManager : MonoBehaviour
 
     public void StartEpisode()
     {
-        episodeStartTime = Time.time;
         episodeCount++;
+        episodeStartTime = Time.time;
+
+        if (arenaSetup != null)
+            arenaSetup.ResetAll();
+
+        foreach (GameObject npc in npcObjects)
+        {
+            NPCAgent agent = npc.GetComponent<NPCAgent>();
+
+            if (agent != null)
+                agent.EndEpisode();
+        }
+
+        Debug.Log($"Episode {episodeCount} started.");
     }
 
     void Update()
     {
-        if (botHP == null) return;
+        if (botHP == null)
+            return;
 
         bool allNPCsDead = true;
+
         foreach (var hp in npcHPSystems)
-            if (!hp.IsDead()) { allNPCsDead = false; break; }
+        {
+            if (!hp.IsDead())
+            {
+                allNPCsDead = false;
+                break;
+            }
+        }
 
         if (botHP.IsDead())
+        {
             EndEpisode("NPC_SQUAD");
+        }
         else if (allNPCsDead)
+        {
             EndEpisode("BOT");
+        }
+        else if (Time.time - episodeStartTime >= 120f)
+        {
+            EndEpisode("TIMEOUT");
+        }
     }
 
     public void EndEpisode(string winner)
@@ -59,25 +93,36 @@ public class GameManager : MonoBehaviour
         float duration = Time.time - episodeStartTime;
 
         float[] npcHPs = new float[npcHPSystems.Count];
+
         for (int i = 0; i < npcHPSystems.Count; i++)
             npcHPs[i] = npcHPSystems[i].currentHP;
 
         int npcsAlive = 0;
+
         foreach (var hp in npcHPSystems)
-            if (!hp.IsDead()) npcsAlive++;
+            if (!hp.IsDead())
+                npcsAlive++;
 
         MetricsLogger.instance.LogEpisode(
-            episodeCount, currentCombo, currentBotType,
-            duration, winner, npcsAlive, botHP.currentHP, npcHPs
+            episodeCount,
+            currentCombo,
+            currentBotType,
+            duration,
+            winner,
+            npcsAlive,
+            botHP.currentHP,
+            npcHPs
         );
 
-        Debug.Log($"[Episode {episodeCount}] Combo {currentCombo} | Bot: {currentBotType} " +
-                  $"| Time: {duration:F1}s | Winner: {winner} | NPCs Alive: {npcsAlive}/5 " +
-                  $"| Bot HP: {botHP.currentHP:F0}" +
-                  $"\nNPC HP: [NPC1:{npcHPs[0]:F0}] [NPC2:{npcHPs[1]:F0}] " +
-                  $"[NPC3:{npcHPs[2]:F0}] [NPC4:{npcHPs[3]:F0}] [NPC5:{npcHPs[4]:F0}]");
+        Debug.Log(
+            $"[Episode {episodeCount}] Combo {currentCombo}" +
+            $" | Bot: {currentBotType}" +
+            $" | Time: {duration:F1}s" +
+            $" | Winner: {winner}" +
+            $" | NPCs Alive: {npcsAlive}/5" +
+            $" | Bot HP: {botHP.currentHP:F0}"
+        );
 
-        // Reset for next episode — NPCAgent.OnEpisodeBegin() handles NPC reset
-        // Bot and NPC HP reset handled by ArenaSetup
+        StartEpisode();
     }
 }

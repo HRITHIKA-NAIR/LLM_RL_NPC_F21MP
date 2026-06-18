@@ -34,7 +34,8 @@ public class ArenaSetup : MonoBehaviour
 
         // Reset HP
         foreach (HPSystem hp in npcHPSystems)
-            hp.ResetHP();
+            if (hp != null)
+                hp.ResetHP();
 
         if (botHPSystem != null)
             botHPSystem.ResetHP();
