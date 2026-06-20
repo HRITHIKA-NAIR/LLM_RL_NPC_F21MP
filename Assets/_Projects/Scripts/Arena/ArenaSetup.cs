@@ -4,7 +4,7 @@ public class ArenaSetup : MonoBehaviour
 {
     [Header("NPC Spawn Zone (centre and half-size)")]
     public Vector3 npcSpawnCentre = new Vector3(-7f, 0f, 0f);
-    public Vector3 npcSpawnHalfExtents = new Vector3(5f, 0f, 12f);
+    public Vector3 npcSpawnHalfExtents = new Vector3(4f, 0f, 8f);
 
     [Header("Bot Spawn Zone")]
     public Vector3 botSpawnCentre = new Vector3(7f, 0f, 0f);
@@ -16,6 +16,19 @@ public class ArenaSetup : MonoBehaviour
     public HPSystem[] npcHPSystems;
     public HPSystem botHPSystem;
 
+    // Remember the bot's original position and rotation
+    private Vector3 initialBotPosition;
+    private Quaternion initialBotRotation;
+
+    void Awake()
+    {
+        if (botTransform != null)
+        {
+            initialBotPosition = botTransform.position;
+            initialBotRotation = botTransform.rotation;
+        }
+    }
+
     public void ResetAll()
     {
         // Reset positions
@@ -26,10 +39,23 @@ public class ArenaSetup : MonoBehaviour
             npc.rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
         }
 
+        // Reset bot to its original position and rotation
         if (botTransform != null)
         {
-            botTransform.position = RandomInZone(botSpawnCentre, botSpawnHalfExtents);
-            botTransform.rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
+            CharacterController cc = botTransform.GetComponent<CharacterController>();
+
+            if (cc != null)
+                cc.enabled = false;
+
+            botTransform.position = initialBotPosition;
+            botTransform.rotation = initialBotRotation;
+
+            BotController botController = botTransform.GetComponent<BotController>();
+            if (botController != null)
+                botController.ResetForNewEpisode();
+
+            if (cc != null)
+                cc.enabled = true;
         }
 
         // Reset HP

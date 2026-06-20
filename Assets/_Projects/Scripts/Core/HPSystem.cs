@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using System.Collections;
 
 public class HPSystem : MonoBehaviour
 {
@@ -20,6 +21,9 @@ public class HPSystem : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
+
+         if (!gameObject.activeInHierarchy) return;
+
         if (isDead) return;
 
         currentHP -= amount;
@@ -28,14 +32,28 @@ public class HPSystem : MonoBehaviour
         if (currentHP <= 0f && !isDead)
         {
             isDead = true;
+
             OnDeath.Invoke();
+
+            // Stay lying down for 5 seconds, then disappear
+            StartCoroutine(DisableAfterDelay());
         }
+    }
+
+    IEnumerator DisableAfterDelay()
+    {
+        yield return new WaitForSeconds(5f);
+
+        gameObject.SetActive(false);
     }
 
     public void ResetHP()
     {
         isDead = false;
         currentHP = maxHP;
+
+        // Bring character back next episode
+        gameObject.SetActive(true);
     }
 
     public bool IsDead()

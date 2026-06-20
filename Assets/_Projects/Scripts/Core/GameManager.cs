@@ -21,6 +21,9 @@ public class GameManager : MonoBehaviour
     private HPSystem botHP;
     private List<HPSystem> npcHPSystems = new List<HPSystem>();
 
+    // Prevent multiple EndEpisode() calls
+    private bool episodeEnding = false;
+
     void Awake()
     {
         if (instance == null)
@@ -41,6 +44,8 @@ public class GameManager : MonoBehaviour
 
     public void StartEpisode()
     {
+        episodeEnding = false;
+
         episodeCount++;
         episodeStartTime = Time.time;
 
@@ -60,7 +65,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if (botHP == null)
+        if (botHP == null || episodeEnding)
             return;
 
         bool allNPCsDead = true;
@@ -73,6 +78,9 @@ public class GameManager : MonoBehaviour
                 break;
             }
         }
+
+        if (episodeEnding)
+            return;
 
         if (botHP.IsDead())
         {
@@ -90,6 +98,12 @@ public class GameManager : MonoBehaviour
 
     public void EndEpisode(string winner)
     {
+        // Prevent duplicate calls
+        if (episodeEnding)
+            return;
+
+        episodeEnding = true;
+
         float duration = Time.time - episodeStartTime;
 
         float[] npcHPs = new float[npcHPSystems.Count];
