@@ -49,6 +49,9 @@ public class HPSystem : MonoBehaviour
 
     public void ResetHP()
     {
+        // Stop any old "disable after death" coroutine
+        StopAllCoroutines();
+
         isDead = false;
         currentHP = maxHP;
 
