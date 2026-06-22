@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
 
-public class HUDController : MonoBehaviour
+public class HUDControlller : MonoBehaviour
 {
     [Header("UI References")]
     public TextMeshProUGUI episodeTimerText;

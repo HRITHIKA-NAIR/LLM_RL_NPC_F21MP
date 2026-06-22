@@ -28,13 +28,18 @@ public class BotController : MonoBehaviour
     void Start()
     {
         RefreshActiveStateMachine();
-        npcDamageDealt = new float[npcTransforms.Length];
+
+        if (npcTransforms != null)
+            npcDamageDealt = new float[npcTransforms.Length];
     }
 
     void Update()
     {
-        if (hpSystem.IsDead()) return;
-        if (activeStateMachine == null) return;
+        if (hpSystem == null || hpSystem.IsDead())
+            return;
+
+        if (activeStateMachine == null)
+            return;
 
         if (meleeCooldownTimer > 0f)
             meleeCooldownTimer -= Time.deltaTime;
@@ -42,7 +47,8 @@ public class BotController : MonoBehaviour
         var (moveDir, action) = activeStateMachine.DecideAction();
 
         // Always apply gravity
-        controller.Move(Vector3.down * 9.81f * Time.deltaTime);
+        if (controller != null)
+            controller.Move(Vector3.down * 9.81f * Time.deltaTime);
 
         switch (action)
         {
@@ -63,14 +69,18 @@ public class BotController : MonoBehaviour
                 break;
         }
 
-        // Combat range for animator — drives CombatIdle vs Idle
+        // Combat range for animator
         Transform nearest = GetNearestLivingNPC();
-        bool inCombatRange = nearest != null &&
+
+        bool inCombatRange =
+            nearest != null &&
             Vector3.Distance(transform.position, nearest.position) <= 6f;
-        animator.SetBool("InCombatRange", inCombatRange);
+
+        if (animator != null)
+            animator.SetBool("InCombatRange", inCombatRange);
     }
 
-    // ── MOVE ──
+    // ───────────────── MOVE ─────────────────
     void HandleMove(Vector3 moveDir)
     {
         if (moveDir == Vector3.zero)
@@ -79,105 +89,127 @@ public class BotController : MonoBehaviour
             return;
         }
 
-        // Move
-        controller.Move(moveDir * moveSpeed * Time.deltaTime);
-
-        // Rotate to face movement direction — same pattern as NPCAnimator
-        Quaternion targetRot = Quaternion.LookRotation(moveDir);
-        transform.rotation = Quaternion.RotateTowards(
-            transform.rotation, targetRot, rotateSpeed * Time.deltaTime);
-
-        // Animator — always forward since character faces movement direction
-        float speed = moveDir.magnitude;
-        animator.SetFloat("SpeedZ", speed, 0.1f, Time.deltaTime);
-        animator.SetFloat("SpeedX", 0f, 0.1f, Time.deltaTime);
-        animator.SetFloat("SpeedMagnitude", speed, 0.1f, Time.deltaTime);
-    }
-
-    // ── MELEE ATTACK ──
-    void HandleMelee()
-    {
-        // Stop movement animation
-        SetAnimatorStopped();
-
-        // Rotate to face nearest NPC before swinging
-        // This ensures the animation looks correct and the hit lands
-        Transform target = GetNearestLivingNPC();
-        if (target != null)
+        if (controller != null)
         {
-            Vector3 dirToTarget = (target.position - transform.position);
-            dirToTarget.y = 0;
-            if (dirToTarget.magnitude > 0.01f)
+            CollisionFlags flags =
+                controller.Move(moveDir * moveSpeed * Time.deltaTime);
+
+            if ((flags & CollisionFlags.Sides) != 0)
             {
-                Quaternion targetRot = Quaternion.LookRotation(dirToTarget.normalized);
-                transform.rotation = Quaternion.RotateTowards(
-                    transform.rotation, targetRot, rotateSpeed * Time.deltaTime);
+                // Hit a wall/obstacle → strafe sideways
+                moveDir = Vector3.Cross(Vector3.up, moveDir).normalized;
+                controller.Move(moveDir * moveSpeed * Time.deltaTime);
             }
         }
 
-        // Fire attack if cooldown ready
+        Quaternion targetRot = Quaternion.LookRotation(moveDir);
+
+        transform.rotation = Quaternion.RotateTowards(
+            transform.rotation,
+            targetRot,
+            rotateSpeed * Time.deltaTime);
+
+        float speed = moveDir.magnitude;
+
+        if (animator != null)
+        {
+            animator.SetFloat("SpeedZ", speed, 0.1f, Time.deltaTime);
+            animator.SetFloat("SpeedX", 0f, 0.1f, Time.deltaTime);
+            animator.SetFloat("SpeedMagnitude", speed, 0.1f, Time.deltaTime);
+        }
+    }
+
+    // ───────────────── MELEE ATTACK ─────────────────
+    void HandleMelee()
+    {
+        SetAnimatorStopped();
+
+        Transform target = GetNearestLivingNPC();
+
+        if (target != null)
+        {
+            Vector3 dirToTarget = target.position - transform.position;
+            dirToTarget.y = 0;
+
+            if (dirToTarget.magnitude > 0.01f)
+            {
+                Quaternion targetRot =
+                    Quaternion.LookRotation(dirToTarget.normalized);
+
+                transform.rotation = Quaternion.RotateTowards(
+                    transform.rotation,
+                    targetRot,
+                    rotateSpeed * Time.deltaTime);
+            }
+        }
+
         if (meleeCooldownTimer > 0f) return;
         if (target == null) return;
-        if (Vector3.Distance(transform.position, target.position) > meleeRange)
-            return;
+        if (Vector3.Distance(transform.position, target.position) > meleeRange) return;
 
-        // make sure the bot is actually facing the target
-        Vector3 dir = (target.position - transform.position);
+        Vector3 dir = target.position - transform.position;
         dir.y = 0;
-
         float angle = Vector3.Angle(transform.forward, dir);
-
-        if (angle > 35f)
-            return;
+        if (angle > 35f) return;
 
         meleeCooldownTimer = meleeCooldown;
-        animator.SetTrigger("Attack");
 
-        // Since the attack clip is read-only,
-        // apply damage directly in code.
+        if (animator != null)
+            animator.SetTrigger("Attack");
+
         BotCombatHandler combatHandler = GetComponent<BotCombatHandler>();
-
         if (combatHandler != null)
             combatHandler.TriggerDamage();
     }
 
-    // ── RANGED ATTACK ──
+    // ───────────────── RANGED ATTACK ─────────────────
     void HandleRanged(Vector3 alsoMoveDir)
     {
-        // Keep moving if a direction was provided (e.g., evasive bot retreating while firing)
         if (alsoMoveDir != Vector3.zero)
         {
-            controller.Move(alsoMoveDir * moveSpeed * Time.deltaTime);
+            if (controller != null)
+                controller.Move(alsoMoveDir * moveSpeed * Time.deltaTime);
+
             Quaternion targetRot = Quaternion.LookRotation(alsoMoveDir);
             transform.rotation = Quaternion.RotateTowards(
-                transform.rotation, targetRot, rotateSpeed * Time.deltaTime);
+                transform.rotation,
+                targetRot,
+                rotateSpeed * Time.deltaTime);
 
             float speed = alsoMoveDir.magnitude;
-            animator.SetFloat("SpeedZ", speed, 0.1f, Time.deltaTime);
-            animator.SetFloat("SpeedX", 0f, 0.1f, Time.deltaTime);
-            animator.SetFloat("SpeedMagnitude", speed, 0.1f, Time.deltaTime);
+
+            if (animator != null)
+            {
+                animator.SetFloat("SpeedZ", speed, 0.1f, Time.deltaTime);
+                animator.SetFloat("SpeedX", 0f, 0.1f, Time.deltaTime);
+                animator.SetFloat("SpeedMagnitude", speed, 0.1f, Time.deltaTime);
+            }
         }
         else
         {
             SetAnimatorStopped();
         }
 
-        // Fire orb regardless of movement
-        if (orbLauncher == null || !orbLauncher.CanFireOrb()) return;
+        if (orbLauncher == null) return;
+        if (!orbLauncher.CanFireOrb()) return;
+
         Transform orbTarget = GetNearestLivingNPC();
         if (orbTarget == null) return;
+
         orbLauncher.FireOrb(orbTarget);
     }
 
-    // ── IDLE ──
+    // ───────────────── IDLE ─────────────────
     void HandleIdle()
     {
         SetAnimatorStopped();
     }
 
-    // ── HELPERS ──
+    // ───────────────── HELPERS ─────────────────
     void SetAnimatorStopped()
     {
+        if (animator == null) return;
+
         animator.SetFloat("SpeedMagnitude", 0f, 0.15f, Time.deltaTime);
         animator.SetFloat("SpeedZ", 0f, 0.15f, Time.deltaTime);
         animator.SetFloat("SpeedX", 0f, 0.15f, Time.deltaTime);
@@ -187,12 +219,19 @@ public class BotController : MonoBehaviour
     {
         Transform nearest = null;
         float minDist = float.MaxValue;
+
         for (int i = 0; i < npcTransforms.Length; i++)
         {
             if (npcHPSystems[i] == null || npcHPSystems[i].IsDead()) continue;
+
             float d = Vector3.Distance(transform.position, npcTransforms[i].position);
-            if (d < minDist) { minDist = d; nearest = npcTransforms[i]; }
+            if (d < minDist)
+            {
+                minDist = d;
+                nearest = npcTransforms[i];
+            }
         }
+
         return nearest;
     }
 
@@ -210,20 +249,39 @@ public class BotController : MonoBehaviour
                 m.npcHPSystems = npcHPSystems;
                 m.ownHP = hpSystem;
                 m.ownTransform = transform;
+
+                Debug.Log($"[BotController] Active state machine set to: {m.GetType().Name}");
                 break;
             }
         }
+
+        if (activeStateMachine == null)
+            Debug.LogWarning("[BotController] RefreshActiveStateMachine: no enabled BotStateMachine found.");
     }
 
     public void ResetForNewEpisode()
     {
         meleeCooldownTimer = 0f;
-        if (orbLauncher != null) orbLauncher.ResetCooldown();
+
+        if (orbLauncher != null)
+            orbLauncher.ResetCooldown();
+
         if (npcDamageDealt != null)
             for (int i = 0; i < npcDamageDealt.Length; i++)
                 npcDamageDealt[i] = 0f;
 
         BalancedBot balanced = GetComponent<BalancedBot>();
-        if (balanced != null) balanced.ResetDamageTracking();
+        if (balanced != null)
+            balanced.ResetDamageTracking();
+    }
+
+    // ── FIXED: reads from cached activeStateMachine, no NullRef risk ──
+    public string GetCurrentBotType()
+    {
+        if (activeStateMachine == null)
+            return "Unknown";
+
+        return activeStateMachine.GetType().Name
+            .Replace("Bot", "");  // "AggressiveBot" → "Aggressive" etc.
     }
 }

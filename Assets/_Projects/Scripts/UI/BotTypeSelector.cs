@@ -26,48 +26,56 @@ public class BotTypeSelector : MonoBehaviour
         btnBalanced.onClick.AddListener(()   => SelectBotType("Balanced"));
         btnHuman.onClick.AddListener(()      => SelectBotType("Human"));
 
-        // Start with Aggressive active
         SelectBotType("Aggressive");
     }
 
     public void SelectBotType(string type)
     {
-        // Disable all bot behaviours first
-        aggressiveBot.enabled = false;
-        evasiveBot.enabled = false;
-        balancedBot.enabled = false;
+        // Step 1 — disable all bot behaviours
+        if (aggressiveBot != null) aggressiveBot.enabled = false;
+        if (evasiveBot != null)    evasiveBot.enabled    = false;
+        if (balancedBot != null)   balancedBot.enabled   = false;
 
-        if (humanController != null)
-            humanController.enabled = false;
+        if (humanController != null) humanController.enabled = false;
+        if (botController != null)   botController.enabled   = true;
 
-        botController.enabled = true;
-
+        // Step 2 — enable the chosen one
         switch (type)
         {
             case "Aggressive":
-                aggressiveBot.enabled = true;
+                if (aggressiveBot != null) aggressiveBot.enabled = true;
                 break;
+
             case "Evasive":
-                evasiveBot.enabled = true;
+                if (evasiveBot != null) evasiveBot.enabled = true;
                 break;
+
             case "Balanced":
-                balancedBot.enabled = true;
+                if (balancedBot != null) balancedBot.enabled = true;
                 break;
+
             case "Human":
-                botController.enabled = false;
-                if (humanController != null)
-                    humanController.enabled = true;
+                if (botController != null)   botController.enabled   = false;
+                if (humanController != null) humanController.enabled = true;
                 break;
         }
 
-        // Tell BotController which state machine is now active
-        if (type != "Human")
+        // Step 3 — CRITICAL: refresh AFTER enabling so activeStateMachine
+        // picks up the newly enabled component, not the old one
+        if (type != "Human" && botController != null)
             botController.RefreshActiveStateMachine();
 
-        // Update GameManager logging
+        // Step 4 — update GameManager logging AFTER refresh
+        // so GetCurrentBotType() now returns the correct value
         if (GameManager.instance != null)
-            GameManager.instance.SetBotType(type);
+            GameManager.instance.SetBotType(botController != null
+                ? botController.GetCurrentBotType()
+                : type);
 
-        Debug.Log($"[BotTypeSelector] Switched to: {type}");
+        if (mobileControlsCanvas != null)
+            mobileControlsCanvas.SetActive(type == "Human");
+
+        Debug.Log($"[BotTypeSelector] Switched to: {type} | "
+                  + $"Confirmed active: {botController?.GetCurrentBotType()}");
     }
 }

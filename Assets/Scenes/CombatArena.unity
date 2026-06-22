@@ -379,7 +379,7 @@ RectTransform:
   m_Father: {fileID: 844755341}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 70, y: -5}
   m_SizeDelta: {x: 150, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -629,7 +629,7 @@ MonoBehaviour:
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_BehaviorType: 1
+  m_BehaviorType: 0
   m_BehaviorName: NPC_SharedPolicy
   TeamId: 0
   m_UseChildSensors: 1
@@ -1676,7 +1676,7 @@ MonoBehaviour:
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_BehaviorType: 1
+  m_BehaviorType: 0
   m_BehaviorName: NPC_SharedPolicy
   TeamId: 0
   m_UseChildSensors: 1
@@ -2803,9 +2803,9 @@ RectTransform:
   - {fileID: 2010393810}
   m_Father: {fileID: 2040720851}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 80, y: -15}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &437602189
@@ -3338,13 +3338,18 @@ MonoBehaviour:
   currentCombo: A
   trainingMode: 1
   maxEpisodeSeconds: 120
-  evaluationMode: 0
-  episodesPerBotType: 100
-  episodeCount: 0
+  evaluationMode: 1
+  episodesPerBotType: 150
+  episodeCount: 1
   episodeStartTime: 0
   botHPSystem: {fileID: 718547229}
   botIsMoving: 0
-  npcHPSystems: []
+  npcHPSystems:
+  - {fileID: 6463582157041419879}
+  - {fileID: 870675590}
+  - {fileID: 74495954}
+  - {fileID: 204451494}
+  - {fileID: 1986496067}
 --- !u!1 &519282536
 GameObject:
   m_ObjectHideFlags: 0
@@ -3806,12 +3811,12 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 596793154}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 795695310}
+  m_Father: {fileID: 1647289193}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -3875,6 +3880,8 @@ MonoBehaviour:
   surroundedNPCCount: 3
   surroundRadius: 5
   aggressiveNPCRadius: 8
+  arenaRadius: 18
+  wallBuffer: 2
   npcDamageDealt: []
 --- !u!114 &596793158
 MonoBehaviour:
@@ -3895,6 +3902,7 @@ MonoBehaviour:
   meleeRange: 3
   orbRange: 12
   orbMinRange: 6
+  wallDistance: 12
 --- !u!114 &596793159
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4836,7 +4844,7 @@ RectTransform:
   m_Father: {fileID: 1616303319}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 70, y: -5}
   m_SizeDelta: {x: 150, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -5271,6 +5279,8 @@ MonoBehaviour:
   surroundedNPCCount: 3
   surroundRadius: 5
   aggressiveNPCRadius: 8
+  arenaRadius: 18
+  wallBuffer: 2
   npcDamageDealt: []
 --- !u!114 &718547234
 MonoBehaviour:
@@ -5291,6 +5301,7 @@ MonoBehaviour:
   meleeRange: 3
   orbRange: 12
   orbMinRange: 6
+  wallDistance: 12
 --- !u!114 &718547235
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5575,7 +5586,7 @@ RectTransform:
   m_Father: {fileID: 1941395278}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 70, y: -5}
   m_SizeDelta: {x: 150, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -6055,7 +6066,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &795695310
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6072,7 +6083,6 @@ RectTransform:
   - {fileID: 1016949270}
   - {fileID: 626183613}
   - {fileID: 2040720851}
-  - {fileID: 596793155}
   m_Father: {fileID: 1647289193}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -6623,7 +6633,7 @@ MonoBehaviour:
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_BehaviorType: 1
+  m_BehaviorType: 0
   m_BehaviorName: NPC_SharedPolicy
   TeamId: 0
   m_UseChildSensors: 1
@@ -9232,9 +9242,9 @@ RectTransform:
   - {fileID: 157188638}
   m_Father: {fileID: 2040720851}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 560, y: -15}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1345471888
@@ -10213,9 +10223,9 @@ RectTransform:
   - {fileID: 2047664571}
   m_Father: {fileID: 2040720851}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 400, y: -15}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1428623739
@@ -10787,7 +10797,7 @@ RectTransform:
   m_Father: {fileID: 627372278}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 70, y: -5}
   m_SizeDelta: {x: 150, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -11456,6 +11466,7 @@ Transform:
   - {fileID: 718547228}
   - {fileID: 795695310}
   - {fileID: 2037322044}
+  - {fileID: 596793155}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1657232004
@@ -11849,7 +11860,7 @@ RectTransform:
   m_Father: {fileID: 818946946}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 70, y: -5}
   m_SizeDelta: {x: 150, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -12322,9 +12333,9 @@ RectTransform:
   - {fileID: 680804267}
   m_Father: {fileID: 2040720851}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 240, y: -15}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1791492357
@@ -12856,7 +12867,7 @@ RectTransform:
   m_Father: {fileID: 743447886}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 70, y: -5}
   m_SizeDelta: {x: 150, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -13571,7 +13582,7 @@ MonoBehaviour:
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_BehaviorType: 1
+  m_BehaviorType: 0
   m_BehaviorName: NPC_SharedPolicy
   TeamId: 0
   m_UseChildSensors: 1
@@ -17953,7 +17964,7 @@ MonoBehaviour:
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_BehaviorType: 1
+  m_BehaviorType: 0
   m_BehaviorName: NPC_SharedPolicy
   TeamId: 0
   m_UseChildSensors: 1

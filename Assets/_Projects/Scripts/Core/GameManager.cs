@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
     public bool botIsMoving = false;
     public List<HPSystem> npcHPSystems = new List<HPSystem>();
 
-    private bool episodeEnding = false;   // guard flag — prevents double-firing
+    private bool episodeEnding = false;
     private int currentEvalEpisode = 0;
     private string[] evalBotOrder = { "Aggressive", "Evasive", "Balanced" };
     private int currentBotTypeIndex = 0;
@@ -37,8 +37,10 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        if (instance == null) instance = this;
-        else Destroy(gameObject);
+        if (instance == null)
+            instance = this;
+        else
+            Destroy(gameObject);
     }
 
     void Start()
@@ -47,6 +49,9 @@ public class GameManager : MonoBehaviour
         botHPSystem = botObject.GetComponent<HPSystem>();
 
         // Collect NPC HP systems
+
+        npcHPSystems.Clear();
+
         foreach (var npc in npcObjects)
             npcHPSystems.Add(npc.GetComponent<HPSystem>());
 
@@ -66,32 +71,42 @@ public class GameManager : MonoBehaviour
         // Track bot movement for StrategyBridge
         if (botObject != null)
         {
-            CharacterController botCC = botObject.GetComponent<CharacterController>();
+            CharacterController botCC =
+                botObject.GetComponent<CharacterController>();
+
             if (botCC != null)
                 botIsMoving = botCC.velocity.magnitude > 0.1f;
         }
 
-        // Check win/loss/timeout conditions
+        // Check win/loss conditions
         bool allNPCsDead = true;
+
         foreach (var hp in npcHPSystems)
-            if (!hp.IsDead()) { allNPCsDead = false; break; }
+        {
+            if (!hp.IsDead())
+            {
+                allNPCsDead = false;
+                break;
+            }
+        }
 
         if (botHPSystem.IsDead())
             StartCoroutine(EndEpisodeRoutine("NPC_SQUAD"));
+
         else if (allNPCsDead)
             StartCoroutine(EndEpisodeRoutine("BOT"));
+
         else if (Time.time - episodeStartTime >= maxEpisodeSeconds)
             StartCoroutine(EndEpisodeRoutine("TIMEOUT"));
     }
 
     IEnumerator EndEpisodeRoutine(string winner)
     {
-        // Guard — if already ending, do nothing
         if (episodeEnding) yield break;
         episodeEnding = true;
 
-        // Collect stats
         float duration = Time.time - episodeStartTime;
+
         float[] npcHPs = new float[npcHPSystems.Count];
         for (int i = 0; i < npcHPSystems.Count; i++)
             npcHPs[i] = npcHPSystems[i].currentHP;
@@ -100,14 +115,15 @@ public class GameManager : MonoBehaviour
         foreach (var hp in npcHPSystems)
             if (!hp.IsDead()) npcsAlive++;
 
-        // Log to CSV
+        // ── REMOVED: currentBotType = botController.GetCurrentBotType(); ──
+        // currentBotType is already correct from BotTypeSelector.SelectBotType()
+
         MetricsLogger.instance.LogEpisode(
             episodeCount, currentCombo, currentBotType,
             duration, winner, npcsAlive,
             botHPSystem.currentHP, npcHPs
         );
 
-        // Log to Console with HP detail
         Debug.Log(
             $"[Episode {episodeCount}] Combo {currentCombo} | Bot: {currentBotType}" +
             $" | Time: {duration:F1}s | Winner: {winner}" +
@@ -116,10 +132,11 @@ public class GameManager : MonoBehaviour
             $" [NPC3:{npcHPs[2]:F0}] [NPC4:{npcHPs[3]:F0}] [NPC5:{npcHPs[4]:F0}]"
         );
 
-        // Handle evaluation mode episode counting
+        // Evaluation mode
         if (evaluationMode && !evaluationComplete)
         {
             currentEvalEpisode++;
+
             if (currentEvalEpisode >= episodesPerBotType)
             {
                 currentEvalEpisode = 0;
@@ -128,31 +145,42 @@ public class GameManager : MonoBehaviour
                 if (currentBotTypeIndex >= evalBotOrder.Length)
                 {
                     evaluationComplete = true;
+
                     Debug.Log("[Eval] EVALUATION COMPLETE. Check CSV file.");
+
                     Time.timeScale = 1f;
+
                     episodeEnding = false;
                     yield break;
                 }
 
                 string nextBot = evalBotOrder[currentBotTypeIndex];
+
                 currentBotType = nextBot;
+
                 Debug.Log($"[Eval] Switching to bot type: {nextBot}");
-                FindObjectOfType<BotTypeSelector>()?.SelectBotType(nextBot);
+
+                BotTypeSelector selector =
+                    FindObjectOfType<BotTypeSelector>();
+
+                if (selector != null)
+                    selector.SelectBotType(nextBot);
             }
         }
 
-        // Wait one frame so ML-Agents processes rewards before reset
+        // Allow rewards to be processed
         yield return null;
 
-        // Allow death animation and disappearance to finish
+        // Let death animations finish
         yield return new WaitForSeconds(6f);
 
-        // Tell each NPCAgent their episode is ending
-        // ML-Agents needs this to process the final reward and reset the policy
+        // End ML-Agent episodes
         foreach (GameObject npc in npcObjects)
         {
             NPCAgent agent = npc.GetComponent<NPCAgent>();
-            if (agent != null) agent.EndEpisode();
+
+            if (agent != null)
+                agent.EndEpisode();
         }
 
         // Reset bot
@@ -163,15 +191,14 @@ public class GameManager : MonoBehaviour
         if (arenaSetup != null)
             arenaSetup.ResetAll();
 
-        // Increment episode counter and reset timer
+        // Start next episode
         episodeCount++;
         episodeStartTime = Time.time;
 
-        // Release guard — allow next episode to run
         episodeEnding = false;
     }
 
-    // Called by BotTypeSelector when a button is pressed
+    // Called by BotTypeSelector
     public void SetBotType(string type)
     {
         currentBotType = type;
