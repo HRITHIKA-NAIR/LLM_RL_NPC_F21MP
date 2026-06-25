@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        Debug.Log($"Persistent data path: {Application.persistentDataPath}");
         // Get bot HP system
         botHPSystem = botObject.GetComponent<HPSystem>();
 

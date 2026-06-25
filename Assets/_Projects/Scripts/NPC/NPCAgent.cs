@@ -47,11 +47,21 @@ public class NPCAgent : Agent
 
     public override void OnEpisodeBegin()
     {
-        // HP reset is handled by ArenaSetup.ResetAll()
-        // Position reset is also handled by ArenaSetup
         combatHandler.SetTarget(botTransform);
         combatHandler.ResetCooldown();
         UpdateNearestCover();
+
+        // Combination B training only:
+        // Randomise the strategy tag at the start of each episode.
+        // This teaches the policy to execute all 4 tactical modes.
+        // During evaluation, trainingMode = false and this is skipped —
+        // the LLM sidecar drives the tag instead.
+        if (strategyShapingEnabled &&
+            GameManager.instance != null &&
+            GameManager.instance.trainingMode)
+        {
+            StrategyBridge.currentStrategyTag = Random.Range(0, 4);
+        }
     }
 
     // ─────────────────────────────────────────────
