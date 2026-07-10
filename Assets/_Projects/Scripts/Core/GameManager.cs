@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     [Header("State")]
     public string currentBotType = "Aggressive"; 
     public string currentCombo = "A";
-    public bool trainingMode = true;
+    public bool trainingMode = true; 
     public float maxEpisodeSeconds = 120f;
 
     [Header("Evaluation Settings")]
