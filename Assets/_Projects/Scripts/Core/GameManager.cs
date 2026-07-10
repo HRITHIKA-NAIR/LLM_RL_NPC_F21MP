@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
 
     [Header("References")]
-    public List<GameObject> npcObjects;
+    public List<GameObject> npcObjects; 
     public GameObject botObject;
     public ArenaSetup arenaSetup;
     public BotController botController;
