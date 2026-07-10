@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     [Header("References")]
     public List<GameObject> npcObjects; 
     public GameObject botObject;
-    public ArenaSetup arenaSetup; 
+    public ArenaSetup arenaSetup;  
     public BotController botController;
 
     [Header("State")]
