@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour
     public float maxEpisodeSeconds = 120f;
 
     [Header("Evaluation Settings")]
-    public bool evaluationMode = false;
+    public bool evaluationMode = false; 
     public int episodesPerBotType = 100;
 
     [Header("Training Bot Rotation (step-based, automatic)")] 
