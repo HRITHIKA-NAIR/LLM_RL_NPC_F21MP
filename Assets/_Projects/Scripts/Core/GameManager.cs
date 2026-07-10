@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     public BotController botController;
 
     [Header("State")]
-    public string currentBotType = "Aggressive";
+    public string currentBotType = "Aggressive"; 
     public string currentCombo = "A";
     public bool trainingMode = true;
     public float maxEpisodeSeconds = 120f;
