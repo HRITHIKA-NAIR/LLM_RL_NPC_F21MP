@@ -23,8 +23,8 @@ public class GameManager : MonoBehaviour
     public bool evaluationMode = false;
     public int episodesPerBotType = 100;
 
-    [Header("Training Bot Rotation (step-based, automatic)")]
-    [Tooltip("Total max_steps in your YAML. Must match exactly.")]
+    [Header("Training Bot Rotation (step-based, automatic)")] 
+    [Tooltip("Total max_steps in your YAML. Must match exactly.")] 
     public int totalTrainingSteps = 3000000;
     [Tooltip("How many bot types to rotate through. Normally 3.")]
     public int numberOfBotTypes = 3;
