@@ -572,7 +572,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CombatHandler
   attackRange: 2.5
   engagementRange: 6
-  attackDamage: 15
+  attackDamage: 10
   attackCooldown: 0.8
   orbLauncher: {fileID: 74495958}
   ownerHP: {fileID: 74495954}
@@ -607,7 +607,7 @@ MonoBehaviour:
   - {fileID: 1986496065}
   moveSpeed: 4
   rotateSpeed: 180
-  strategyShapingEnabled: 1
+  strategyShapingEnabled: 0
 --- !u!114 &74495953
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -630,7 +630,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 880ab6ee84e028d44983eb02bf3e629a, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: NPC_SharedPolicy
@@ -732,7 +732,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCOrbLauncher
   orbPrefab: {fileID: 724737346271267573, guid: d3bc2f6656609a54c95471fa3dfa0578, type: 3}
   spawnPoint: {fileID: 1654440057}
-  orbCooldown: 7
+  orbCooldown: 8
 --- !u!1 &75805941
 GameObject:
   m_ObjectHideFlags: 0
@@ -1637,7 +1637,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CombatHandler
   attackRange: 2.5
   engagementRange: 6
-  attackDamage: 15
+  attackDamage: 10
   attackCooldown: 0.8
   orbLauncher: {fileID: 204451498}
   ownerHP: {fileID: 204451494}
@@ -1672,7 +1672,7 @@ MonoBehaviour:
   - {fileID: 1986496065}
   moveSpeed: 4
   rotateSpeed: 180
-  strategyShapingEnabled: 1
+  strategyShapingEnabled: 0
 --- !u!114 &204451493
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1695,7 +1695,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 880ab6ee84e028d44983eb02bf3e629a, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: NPC_SharedPolicy
@@ -1797,7 +1797,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCOrbLauncher
   orbPrefab: {fileID: 724737346271267573, guid: d3bc2f6656609a54c95471fa3dfa0578, type: 3}
   spawnPoint: {fileID: 1190868928}
-  orbCooldown: 7
+  orbCooldown: 8
 --- !u!1 &211590789
 GameObject:
   m_ObjectHideFlags: 0
@@ -3371,7 +3371,7 @@ MonoBehaviour:
   arenaSetup: {fileID: 2037322045}
   botController: {fileID: 718547236}
   currentBotType: Aggressive
-  currentCombo: B
+  currentCombo: A
   trainingMode: 1
   maxEpisodeSeconds: 120
   evaluationMode: 0
@@ -5358,7 +5358,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 718547227}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8a2324f930fc21d4b88cd4ce80e5da8a, type: 3}
   m_Name: 
@@ -5378,7 +5378,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 718547227}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1a4486d459eee1a419d059e66b7af96b, type: 3}
   m_Name: 
@@ -6646,7 +6646,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CombatHandler
   attackRange: 2.5
   engagementRange: 6
-  attackDamage: 15
+  attackDamage: 10
   attackCooldown: 0.8
   orbLauncher: {fileID: 870675594}
   ownerHP: {fileID: 870675590}
@@ -6681,7 +6681,7 @@ MonoBehaviour:
   - {fileID: 1986496065}
   moveSpeed: 4
   rotateSpeed: 180
-  strategyShapingEnabled: 1
+  strategyShapingEnabled: 0
 --- !u!114 &870675589
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6704,7 +6704,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 880ab6ee84e028d44983eb02bf3e629a, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: NPC_SharedPolicy
@@ -6806,7 +6806,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCOrbLauncher
   orbPrefab: {fileID: 724737346271267573, guid: d3bc2f6656609a54c95471fa3dfa0578, type: 3}
   spawnPoint: {fileID: 665345001}
-  orbCooldown: 7
+  orbCooldown: 8
 --- !u!1 &875033784
 GameObject:
   m_ObjectHideFlags: 0
@@ -13752,7 +13752,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CombatHandler
   attackRange: 2.5
   engagementRange: 6
-  attackDamage: 15
+  attackDamage: 10
   attackCooldown: 0.8
   orbLauncher: {fileID: 1986496071}
   ownerHP: {fileID: 1986496067}
@@ -13787,7 +13787,7 @@ MonoBehaviour:
   - {fileID: 1986496065}
   moveSpeed: 4
   rotateSpeed: 180
-  strategyShapingEnabled: 1
+  strategyShapingEnabled: 0
 --- !u!114 &1986496066
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13810,7 +13810,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 880ab6ee84e028d44983eb02bf3e629a, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: NPC_SharedPolicy
@@ -13912,7 +13912,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCOrbLauncher
   orbPrefab: {fileID: 724737346271267573, guid: d3bc2f6656609a54c95471fa3dfa0578, type: 3}
   spawnPoint: {fileID: 1225027537}
-  orbCooldown: 7
+  orbCooldown: 8
 --- !u!1 &1997730142
 GameObject:
   m_ObjectHideFlags: 0
@@ -18183,7 +18183,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CombatHandler
   attackRange: 2.5
   engagementRange: 6
-  attackDamage: 15
+  attackDamage: 10
   attackCooldown: 0.8
   orbLauncher: {fileID: 6463582157041419886}
   ownerHP: {fileID: 6463582157041419879}
@@ -18218,7 +18218,7 @@ MonoBehaviour:
   - {fileID: 1986496065}
   moveSpeed: 4
   rotateSpeed: 180
-  strategyShapingEnabled: 1
+  strategyShapingEnabled: 0
 --- !u!114 &6463582157041419884
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18241,7 +18241,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 880ab6ee84e028d44983eb02bf3e629a, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: NPC_SharedPolicy
@@ -18279,7 +18279,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCOrbLauncher
   orbPrefab: {fileID: 724737346271267573, guid: d3bc2f6656609a54c95471fa3dfa0578, type: 3}
   spawnPoint: {fileID: 2035944394}
-  orbCooldown: 7
+  orbCooldown: 8
 --- !u!1 &6522730763813172184
 GameObject:
   m_ObjectHideFlags: 0

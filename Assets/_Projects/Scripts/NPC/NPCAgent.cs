@@ -60,12 +60,35 @@ public class NPCAgent : Agent
             GameManager.instance != null &&
             GameManager.instance.trainingMode)
         {
-            StrategyBridge.currentStrategyTag = Random.Range(0, 4);
+            string currentBot = GameManager.instance.currentBotType;
+
+            if (currentBot == "Evasive")
+            {
+                // Tag 3 (Retreat) is excluded from random sampling when
+                // the active opponent is the Evasive bot. Because the
+                // Evasive bot's own scripted behaviour is itself
+                // retreat-dominant, sampling Retreat here produces
+                // degenerate episodes in which both the NPC and the bot
+                // move apart simultaneously, generating reward with no
+                // combat engagement. This was identified as the primary
+                // cause of the training collapse observed at
+                // approximately step 1,600,000 in run comboB_v01, and is
+                // excluded here for all subsequent runs (comboB_v02
+                // onward). This exclusion is confined to Combination B's
+                // tag-sampling mechanism and does not alter Combination
+                // A, the shared PPO hyperparameters, or the base reward
+                // function in any way.
+                StrategyBridge.currentStrategyTag = Random.Range(0, 3); // 0, 1, 2 only
+            }
+            else
+            {
+                StrategyBridge.currentStrategyTag = Random.Range(0, 4); // all four tags
+            }
         }
     }
 
     // ─────────────────────────────────────────────
-    // OBSERVATIONS — what the NPC sees (24 floats)
+    // OBSERVATIONS — what the NPC sees (23 floats)
     // ─────────────────────────────────────────────
     public override void CollectObservations(VectorSensor sensor)
     {
@@ -130,14 +153,11 @@ public class NPCAgent : Agent
         sensor.AddObservation(StrategyBridge.currentStrategyTag / 3f);
 
         // Total: 2+1+2+1+1+1+2+12+1 = 23 floats
-        // Wait — that is 23. Let me recount and add one more:
-        // Adding: bot is moving this step (1 float)
-        // Bot velocity magnitude normalised
-        // Note: we add bot movement as the 24th observation
+        // Must exactly match Space Size in BehaviorParameters on all 5 NPCs.
     }
 
     // ─────────────────────────────────────────────
-    // ACTIONS — what the NPC can do (5 discrete)
+    // ACTIONS — what the NPC can do (6 discrete)
     // ─────────────────────────────────────────────
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
@@ -176,6 +196,10 @@ public class NPCAgent : Agent
                     moveDirection = (transform.position - botTransform.position).normalized;
                     moveDirection.y = 0;
                 }
+                break;
+
+            case 5: // Ranged attack — fire orb at bot
+                combatHandler.ExecuteRangedAttack();
                 break;
         }
 
@@ -247,23 +271,28 @@ public class NPCAgent : Agent
         {
             case 0: // Surround — reward angular spread
                 float angle = GetAngleAroundBot();
-                float spreadBonus = 0.01f * Mathf.Abs(Mathf.Sin(angle * Mathf.Deg2Rad));
+                float spreadBonus = 0.005f * Mathf.Abs(Mathf.Sin(angle * Mathf.Deg2Rad));
                 AddReward(spreadBonus);
                 break;
 
-            case 1: // Aggressive — double proximity reward
+            case 1: // Aggressive — boost proximity reward
                 AddReward(0.01f * (1f - Mathf.Clamp01(dist / arenaDiagonal)));
                 break;
 
             case 2: // Flank — reward being to the side of the bot
                 float flanAngle = GetAngleAroundBot();
                 if (flanAngle > 60f && flanAngle < 120f)
-                    AddReward(0.015f);
+                    AddReward(0.0075f);
                 break;
 
-            case 3: // Retreat — reward distance, penalise being too close
-                AddReward(0.01f * Mathf.Clamp01(dist / arenaDiagonal));
-                if (dist < 8f) AddReward(-0.01f);
+            case 3: // Retreat — capped distance reward, penalise being too close
+                // Capped at 0.005 max (was uncapped at up to 0.01) so this
+                // term can no longer fully cancel or exceed the base
+                // proximity reward. See OnEpisodeBegin for the additional
+                // exclusion of this tag when facing the Evasive bot.
+                float retreatBonus = Mathf.Min(0.005f * Mathf.Clamp01(dist / arenaDiagonal), 0.005f);
+                AddReward(retreatBonus);
+                if (dist < 8f) AddReward(-0.005f);
                 break;
         }
     }
@@ -281,7 +310,7 @@ public class NPCAgent : Agent
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         var discreteActions = actionsOut.DiscreteActions;
-        discreteActions[0] = Random.Range(0, 5);
+        discreteActions[0] = Random.Range(0, 6);
     }
 
     // ─────────────────────────────────────────────
